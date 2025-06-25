@@ -6,8 +6,8 @@ def as_percent(num):
 def calculate_demographic_data(print_data=True):
     # Read data from file
     df = pd.read_csv('adult.data.csv')
-    print(df.head(10))
-    print(df.shape)
+    #print(df.head(10))
+    #print(df.shape)
 
     # How many of each race are represented in this dataset? This should be a Pandas series with race names as the index labels.
     race_count = df["race"].value_counts()
@@ -40,11 +40,15 @@ def calculate_demographic_data(print_data=True):
     rich_percentage = as_percent(sum(works_min & rich) / sum(works_min))
 
     # What country has the highest percentage of people that earn >50K?
-    highest_earning_country = None
-    highest_earning_country_percentage = None
+    rich_by_c = df.query('salary==">50K"').groupby('native-country').size()
+    all_by_c = df.groupby('native-country').size()
+    highest_earning_country = (rich_by_c / all_by_c).sort_values(ascending = False)
+    highest_earning_country_percentage = as_percent(highest_earning_country[0])
+    highest_earning_country = highest_earning_country.index[0]
+
 
     # Identify the most popular occupation for those who earn >50K in India.
-    top_IN_occupation = None
+    top_IN_occupation =  df.query('salary==">50K"').rename(columns={"native-country": "nativeCountry"}).query('nativeCountry == "India"')["occupation"].mode()[0]
 
     # DO NOT MODIFY BELOW THIS LINE
 
